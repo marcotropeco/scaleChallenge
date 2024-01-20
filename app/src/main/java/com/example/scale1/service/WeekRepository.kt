@@ -12,7 +12,7 @@ interface WeekRepository {
 
 class WeekRepositoryImpl(private val weekDataDao: WeekDataDao) : WeekRepository {
     override suspend fun getWeekDataStorage(weekNumberYear: Int): List<WeekData> {
-        return withContext(Dispatchers.Default) {
+        return withContext(Dispatchers.IO) {
             val listWeeks = weekDataDao.getAllWeekData().toListWeekData()
 
             val calcModWeek = weekNumberYear % listWeeks.size

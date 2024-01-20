@@ -4,10 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.scale1.model.People
-import com.example.scale1.storage.Converters
-import com.example.scale1.storage.PeopleEntity
-
 @Entity(tableName = "week_data_table")
 data class WeekDataEntity(
     @ColumnInfo(name = "id")

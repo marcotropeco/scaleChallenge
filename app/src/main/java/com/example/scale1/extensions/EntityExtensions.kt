@@ -14,12 +14,12 @@ fun List<PeopleEntity>.toListPeople(): List<People>{
 }
 
 fun List<WeekDataEntity>.toListWeekData(): List<WeekData> {
-    return this.map {
+    return this.map  {
         WeekData(
             monday = it.monday.toListPeople(),
             tuesday = it.tuesday.toListPeople(),
             wednesday = it.wednesday.toListPeople(),
-            thursday = it.tuesday.toListPeople(),
+            thursday = it.thursday.toListPeople(),
             friday = it.friday.toListPeople()
         )
     }

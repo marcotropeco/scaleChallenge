@@ -11,7 +11,7 @@ interface WeekDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWeekData(weekData: WeekDataEntity)
 
-    @Query("SELECT * FROM week_data_table")
+    @Query("SELECT id, monday, tuesday, wednesday, thursday, friday FROM week_data_table group by id")
     suspend fun getAllWeekData(): List<WeekDataEntity>
 
     @Query("DELETE FROM week_data_table")
