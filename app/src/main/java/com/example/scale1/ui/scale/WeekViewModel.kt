@@ -2,6 +2,7 @@ package com.example.scale1.ui.scale
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.scale1.model.ResultUseCase
 import com.example.scale1.model.WeekData
 import com.example.scale1.service.WeekUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,23 +58,25 @@ class WeekViewModel(private val useCase: WeekUseCase) : ViewModel() {
         return calendar.get(Calendar.WEEK_OF_YEAR)
     }
 
-    fun refreshDate(){
+    fun refreshDate() {
         onDateSelected(getLocalDate())
     }
 
-    fun previousWeek(){
+    fun previousWeek() {
         val date = _localDate.value
         onDateSelected(date.minusDays(7))
     }
 
-    fun nextWeek(){
+    fun nextWeek() {
         val date = _localDate.value
         onDateSelected(date.plusDays(7))
     }
 
-    fun onDateSelected(date: LocalDate){
+    fun onDateSelected(date: LocalDate) {
         viewModelScope.launch {
             try {
+                _uiState.value = UiState.Loading
+
                 var localDate = date
                 if (localDate.dayOfWeek == DayOfWeek.SATURDAY) {
                     localDate = localDate.plusDays(2)
@@ -83,8 +86,16 @@ class WeekViewModel(private val useCase: WeekUseCase) : ViewModel() {
                 }
 
                 _localDate.value = localDate
-                val scaleWeek = useCase.getScaleWeek(getWeekNumber(localDate))
-                _uiState.value = UiState.Success(scaleWeek)
+
+                when (val result = useCase(getWeekNumber(localDate))) {
+                    is ResultUseCase.Success -> {
+                        _uiState.value = UiState.Success(result.data)
+                    }
+                    is ResultUseCase.Failure -> {
+                        _uiState.value = UiState.Error(result.exception.message.orEmpty())
+                    }
+                }
+
             } catch (e: Exception) {
                 _uiState.value = UiState.Error(e.message ?: "Erro desconhecido")
             }

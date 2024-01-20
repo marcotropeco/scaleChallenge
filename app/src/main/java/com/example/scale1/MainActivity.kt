@@ -16,11 +16,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.scale1.model.People
@@ -101,24 +102,27 @@ fun TableWeek(viewModel: WeekViewModel) {
                     .fillMaxSize()
             ) {
 
-                NameDropDown(
-                    names = getDistinctNames((uiState as UiState.Success).weekData),
-                    nameSelected = selectedName,
-                    onNameSelected = viewModel::onNameSelected,
-                    openBottomSheet = openBottomSheet,
-                    onOpenBottomSheet = viewModel::onOpenBottomSheet,
-                    onOpenCalendar = viewModel::onOpenCalendar,
-                    openCalendar = openCalendar,
-                    onDateSelected = viewModel::onDateSelected,
-                    refreshDate = viewModel::refreshDate,
-                    nextWeek = viewModel::nextWeek,
-                    previousWeek = viewModel::previousWeek
-                )
+                (uiState as? UiState.Success)?.let {
+                    NameDropDown(
+                        names = getDistinctNames(it.weekData),
+                        nameSelected = selectedName,
+                        onNameSelected = viewModel::onNameSelected,
+                        openBottomSheet = openBottomSheet,
+                        onOpenBottomSheet = viewModel::onOpenBottomSheet,
+                        onOpenCalendar = viewModel::onOpenCalendar,
+                        openCalendar = openCalendar,
+                        onDateSelected = viewModel::onDateSelected,
+                        refreshDate = viewModel::refreshDate,
+                        nextWeek = viewModel::nextWeek,
+                        previousWeek = viewModel::previousWeek
+                    )
+                }
+
 
                 Spacer(modifier = Modifier.height(16.dp))
                 when (uiState) {
                     is UiState.Loading -> {
-                        CircularProgressIndicator()
+                        ShimmerLoadingExample()
                     }
 
                     is UiState.Success -> {
@@ -138,6 +142,28 @@ fun TableWeek(viewModel: WeekViewModel) {
             }
 
         })
+}
+
+@Composable
+fun ShimmerLoadingExample() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Gray.copy(alpha = 0.1f))
+            .padding(16.dp),
+    ) {
+        Text(
+            "Carregando...", fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+        )
+    }
 }
 
 @Composable
