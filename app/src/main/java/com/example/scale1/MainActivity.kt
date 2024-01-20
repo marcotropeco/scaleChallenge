@@ -43,6 +43,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.scale1.MainActivity.Companion.CURRENT_WEEK
+import com.example.scale1.MainActivity.Companion.DATE_FORMAT
+import com.example.scale1.MainActivity.Companion.FIND_DATE
+import com.example.scale1.MainActivity.Companion.FRIDAY
+import com.example.scale1.MainActivity.Companion.MONDAY
+import com.example.scale1.MainActivity.Companion.SCALE_WEEK
+import com.example.scale1.MainActivity.Companion.TEXT_ALL_FILTER
+import com.example.scale1.MainActivity.Companion.TEXT_CANCEL
+import com.example.scale1.MainActivity.Companion.TEXT_OK
+import com.example.scale1.MainActivity.Companion.THURSDAY
+import com.example.scale1.MainActivity.Companion.TUESDAY
+import com.example.scale1.MainActivity.Companion.WEDNESDAY
 import com.example.scale1.model.People
 import com.example.scale1.model.WeekData
 import com.example.scale1.ui.scale.UiState
@@ -65,6 +77,21 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    companion object {
+        const val CURRENT_WEEK = "semana corrente"
+        const val FIND_DATE = "Filtrar data"
+        const val TEXT_ALL_FILTER = "Todos"
+        const val TEXT_OK = "OK"
+        const val TEXT_CANCEL = "Cancelar"
+        const val SCALE_WEEK = "Escala Semanal :"
+        const val DATE_FORMAT = "dd/MM/yyyy"
+        const val MONDAY = "Segunda-Feira"
+        const val TUESDAY = "Terça-Feira"
+        const val WEDNESDAY = "Quarta-Feira"
+        const val THURSDAY = "Quinta-Feira"
+        const val FRIDAY = "Sexta-Feira"
+    }
 }
 
 @Composable
@@ -86,13 +113,13 @@ fun TableWeek(viewModel: WeekViewModel) {
     val selectedName by viewModel.selectedName.collectAsState()
     val localDate by viewModel.localDate.collectAsState()
 
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
     val dateFormatted = localDate.format(formatter)
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Escala Semanal : $dateFormatted") },
+                title = { Text("$SCALE_WEEK $dateFormatted") },
                 modifier = Modifier.background(Color.Blue)
             )
         },
@@ -180,20 +207,11 @@ fun WeekColumn(
     selectedName: String?
 ) {
     Column {
-
-        DayColumn(dayData = weekData.monday, day = "Segunda-Feira", selectedName)
-        DayColumn(dayData = weekData.tuesday, day = "Terça-Feira", selectedName)
-        DayColumn(
-            dayData = weekData.wednesday,
-            day = "Quarta-Feira",
-            selectedName
-        )
-        DayColumn(dayData = weekData.thursday, day = "Quinta-Feira", selectedName)
-        DayColumn(
-            dayData = weekData.friday,
-            day = "Sexta-Feira",
-            selectedName
-        )
+        DayColumn(dayData = weekData.monday, day = MONDAY, selectedName)
+        DayColumn(dayData = weekData.tuesday, day = TUESDAY, selectedName)
+        DayColumn(dayData = weekData.wednesday, day = WEDNESDAY, selectedName)
+        DayColumn(dayData = weekData.thursday, day = THURSDAY, selectedName)
+        DayColumn(dayData = weekData.friday, day = FRIDAY, selectedName)
     }
 }
 
@@ -210,13 +228,11 @@ fun DayColumn(
     ) {
         Text(text = day, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 
-        val data = if (selectedName != "Todos") {
+        val data = if (selectedName != TEXT_ALL_FILTER) {
             dayData.filter { selectedName.isNullOrBlank() || it.name == selectedName }
         } else dayData
 
-
         data.forEach { person -> PersonRow(person = person) }
-
     }
 }
 
@@ -247,7 +263,6 @@ fun NameDropDown(
 
     var openBottomSheet by remember { mutableStateOf(false) }
     var onOpenCalendar by remember { mutableStateOf(false) }
-    var effectExecuted by remember { mutableStateOf(false) }
 
     Spacer(modifier = Modifier.height(32.dp))
 
@@ -288,7 +303,7 @@ fun NameDropDown(
         Button(onClick = {
             onOpenCalendar = true
         }) {
-            Text(text = "Filtrar data")
+            Text(text = FIND_DATE)
         }
     }
 
@@ -297,19 +312,19 @@ fun NameDropDown(
         Button(onClick = {
             refreshDate()
         }) {
-            Text(text = "Data Atual")
+            Text(text = CURRENT_WEEK)
         }
         Spacer(modifier = Modifier.width(16.dp))
         Button(onClick = {
             previousWeek()
         }) {
-            Text(text = "Anterior")
+            Text(text = "<<")
         }
         Spacer(modifier = Modifier.width(16.dp))
         Button(onClick = {
             nextWeek()
         }) {
-            Text(text = "Proxima")
+            Text(text = ">>")
         }
     }
 
@@ -322,12 +337,12 @@ fun getDistinctNames(weekData: List<WeekData>): List<String> {
         .flatMap {
             listOf(
                 People(
-                    name = "Todos",
+                    name = TEXT_ALL_FILTER,
                     mode = "*"
                 )
             ) + it.monday + it.tuesday + it.wednesday + it.thursday + it.friday
         }
-        .map { it.name }.plus("Todos")
+        .map { it.name }
         .distinct()
 }
 
@@ -392,14 +407,14 @@ fun CalendarDatePicker(
             }
 
             ) {
-                Text(text = "OK")
+                Text(text = TEXT_OK)
             }
         },
         dismissButton = {
             Button(onClick = {
                 onDismiss()
             }) {
-                Text(text = "Cancel")
+                Text(text = TEXT_CANCEL)
             }
         },
         content = {
