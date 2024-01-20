@@ -63,12 +63,12 @@ class WeekViewModel(private val useCase: WeekUseCase) : ViewModel() {
 
     fun previousWeek(){
         val date = _localDate.value
-        onDateSelected(date.plusDays(7))
+        onDateSelected(date.minusDays(7))
     }
 
     fun nextWeek(){
         val date = _localDate.value
-        onDateSelected(date.minusDays(7))
+        onDateSelected(date.plusDays(7))
     }
 
     fun onDateSelected(date: LocalDate){
