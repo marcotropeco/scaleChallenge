@@ -331,7 +331,6 @@ fun NameDropDown(
     Spacer(modifier = Modifier.height(32.dp))
 }
 
-
 fun getDistinctNames(weekData: List<WeekData>): List<String> {
     return weekData
         .flatMap {
@@ -345,7 +344,6 @@ fun getDistinctNames(weekData: List<WeekData>): List<String> {
         .map { it.name }
         .distinct()
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -384,7 +382,6 @@ fun BottomSheetClickable(
     )
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarDatePicker(
@@ -422,7 +419,6 @@ fun CalendarDatePicker(
         }
     )
 }
-
 private fun convertMillisToDate(millis: Long): LocalDate {
     val instant = Instant.ofEpochMilli(millis)
     return instant.atZone(ZoneId.of("UTC")).toLocalDate()
