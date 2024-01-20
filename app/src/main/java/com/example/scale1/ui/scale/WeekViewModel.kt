@@ -83,7 +83,7 @@ class WeekViewModel(private val useCase: WeekUseCase) : ViewModel() {
                 }
 
                 _localDate.value = localDate
-                val scaleWeek = useCase.getScaleWeek(getWeekNumber(date))
+                val scaleWeek = useCase.getScaleWeek(getWeekNumber(localDate))
                 _uiState.value = UiState.Success(scaleWeek)
             } catch (e: Exception) {
                 _uiState.value = UiState.Error(e.message ?: "Erro desconhecido")
