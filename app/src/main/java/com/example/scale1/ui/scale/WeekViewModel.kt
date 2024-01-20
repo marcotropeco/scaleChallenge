@@ -21,6 +21,12 @@ sealed class UiState {
     data class Error(val message: String) : UiState()
 }
 
+/*
+data class ScaleState(
+    val weekData: List<WeekData>,
+
+)
+*/
 
 class WeekViewModel(private val useCase: WeekUseCase) : ViewModel() {
 
@@ -30,25 +36,12 @@ class WeekViewModel(private val useCase: WeekUseCase) : ViewModel() {
     private val _selectedName = MutableStateFlow<String?>(null)
     val selectedName: StateFlow<String?> = _selectedName.asStateFlow()
 
-    private val _onOpenBottomSheet = MutableStateFlow(false)
-    val onOpenBottomSheet: StateFlow<Boolean> = _onOpenBottomSheet.asStateFlow()
-
-    private val _onOpenCalendar = MutableStateFlow(false)
-    val onOpenCalendar: StateFlow<Boolean> = _onOpenCalendar.asStateFlow()
-
     private val _localDate = MutableStateFlow(getLocalDate())
     val localDate: StateFlow<LocalDate> = _localDate
 
     private fun getLocalDate(): LocalDate {
-        var localDate = LocalDate.now()
-
-        if (localDate.dayOfWeek == DayOfWeek.SATURDAY) {
-            localDate = localDate.plusDays(2)
-        }
-        if (localDate.dayOfWeek == DayOfWeek.SUNDAY) {
-            localDate = localDate.plusDays(1)
-        }
-        return localDate
+        val localDate = LocalDate.now()
+        return validateWeeks(localDate)
     }
 
     private fun getWeekNumber(localDate: LocalDate): Int {
@@ -72,25 +65,31 @@ class WeekViewModel(private val useCase: WeekUseCase) : ViewModel() {
         onDateSelected(date.plusDays(7))
     }
 
+
+    private fun validateWeeks(localDate: LocalDate) =
+        when (localDate.dayOfWeek) {
+            DayOfWeek.SATURDAY -> {
+                localDate.plusDays(2)
+            }
+            DayOfWeek.SUNDAY -> {
+                localDate.plusDays(1)
+            }
+            else -> {
+                localDate
+            }
+        }
+
     fun onDateSelected(date: LocalDate) {
         viewModelScope.launch {
             try {
                 _uiState.value = UiState.Loading
+                _localDate.value = date
 
-                var localDate = date
-                if (localDate.dayOfWeek == DayOfWeek.SATURDAY) {
-                    localDate = localDate.plusDays(2)
-                }
-                if (localDate.dayOfWeek == DayOfWeek.SUNDAY) {
-                    localDate = localDate.plusDays(1)
-                }
-
-                _localDate.value = localDate
-
-                when (val result = useCase(getWeekNumber(localDate))) {
+                when (val result = useCase(getWeekNumber(date))) {
                     is ResultUseCase.Success -> {
                         _uiState.value = UiState.Success(result.data)
                     }
+
                     is ResultUseCase.Failure -> {
                         _uiState.value = UiState.Error(result.exception.message.orEmpty())
                     }
@@ -103,18 +102,10 @@ class WeekViewModel(private val useCase: WeekUseCase) : ViewModel() {
     }
 
     init {
-        onDateSelected(_localDate.value)
+        onDateSelected(validateWeeks(_localDate.value))
     }
 
     fun onNameSelected(name: String?) {
         _selectedName.value = name
-    }
-
-    fun onOpenBottomSheet(status: Boolean) {
-        _onOpenBottomSheet.value = status
-    }
-
-    fun onOpenCalendar(status: Boolean) {
-        _onOpenCalendar.value = status
     }
 }

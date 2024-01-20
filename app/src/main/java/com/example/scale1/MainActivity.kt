@@ -1,5 +1,6 @@
 package com.example.scale1
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +32,9 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,7 +57,6 @@ import java.time.format.DateTimeFormatter
 class MainActivity : ComponentActivity() {
 
     private val weekViewModel: WeekViewModel by viewModel()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -81,9 +84,7 @@ fun TableUI(viewModel: WeekViewModel) {
 fun TableWeek(viewModel: WeekViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     val selectedName by viewModel.selectedName.collectAsState()
-    val openBottomSheet by viewModel.onOpenBottomSheet.collectAsState()
     val localDate by viewModel.localDate.collectAsState()
-    val openCalendar by viewModel.onOpenCalendar.collectAsState()
 
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val dateFormatted = localDate.format(formatter)
@@ -107,10 +108,6 @@ fun TableWeek(viewModel: WeekViewModel) {
                         names = getDistinctNames(it.weekData),
                         nameSelected = selectedName,
                         onNameSelected = viewModel::onNameSelected,
-                        openBottomSheet = openBottomSheet,
-                        onOpenBottomSheet = viewModel::onOpenBottomSheet,
-                        onOpenCalendar = viewModel::onOpenCalendar,
-                        openCalendar = openCalendar,
                         onDateSelected = viewModel::onDateSelected,
                         refreshDate = viewModel::refreshDate,
                         nextWeek = viewModel::nextWeek,
@@ -236,20 +233,22 @@ fun PersonRow(person: People) {
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun NameDropDown(
     names: List<String>,
     nameSelected: String?,
     onNameSelected: (String?) -> Unit,
-    openBottomSheet: Boolean,
-    onOpenBottomSheet: (Boolean) -> Unit,
-    onOpenCalendar: (Boolean) -> Unit,
-    openCalendar: Boolean,
     onDateSelected: (LocalDate) -> Unit,
     refreshDate: () -> Unit,
     nextWeek: () -> Unit,
     previousWeek: () -> Unit,
 ) {
+
+    var openBottomSheet by remember { mutableStateOf(false) }
+    var onOpenCalendar by remember { mutableStateOf(false) }
+    var effectExecuted by remember { mutableStateOf(false) }
+
     Spacer(modifier = Modifier.height(32.dp))
 
     val textName = nameSelected?.let {
@@ -261,33 +260,33 @@ fun NameDropDown(
             items = names,
             onItemClick = { item ->
                 onNameSelected(item)
-                onOpenBottomSheet(false)
+                openBottomSheet = false
             },
             onDismiss = {
-                onOpenBottomSheet(false)
+                openBottomSheet = false
             },
             sheetState = false
         )
     }
 
-    if (openCalendar) {
+    if (onOpenCalendar) {
         CalendarDatePicker(
             onDateSelected,
             onDismiss = {
-                onOpenCalendar(false)
+                onOpenCalendar = false
             },
         )
     }
 
     Row {
         Button(onClick = {
-            onOpenBottomSheet(true)
+            openBottomSheet = true
         }) {
             Text(text = textName)
         }
         Spacer(modifier = Modifier.width(16.dp))
         Button(onClick = {
-            onOpenCalendar(true)
+            onOpenCalendar = true
         }) {
             Text(text = "Filtrar data")
         }
@@ -316,6 +315,7 @@ fun NameDropDown(
 
     Spacer(modifier = Modifier.height(32.dp))
 }
+
 
 fun getDistinctNames(weekData: List<WeekData>): List<String> {
     return weekData
@@ -410,6 +410,5 @@ fun CalendarDatePicker(
 
 private fun convertMillisToDate(millis: Long): LocalDate {
     val instant = Instant.ofEpochMilli(millis)
-
     return instant.atZone(ZoneId.of("UTC")).toLocalDate()
 }
