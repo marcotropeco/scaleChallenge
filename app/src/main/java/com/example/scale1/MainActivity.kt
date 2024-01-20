@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
-        const val CURRENT_WEEK = "semana corrente"
+        const val CURRENT_WEEK = "Semana corrente"
         const val FIND_DATE = "Filtrar data"
         const val TEXT_ALL_FILTER = "Todos"
         const val TEXT_OK = "OK"
@@ -141,7 +141,6 @@ fun TableWeek(viewModel: WeekViewModel) {
                         previousWeek = viewModel::previousWeek
                     )
                 }
-
 
                 Spacer(modifier = Modifier.height(16.dp))
                 when (uiState) {
