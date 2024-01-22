@@ -59,6 +59,10 @@ import com.example.scale1.ui.scale.Defines.TEXT_OK
 import com.example.scale1.ui.scale.Defines.THURSDAY
 import com.example.scale1.ui.scale.Defines.TUESDAY
 import com.example.scale1.ui.scale.Defines.WEDNESDAY
+import com.example.scale1.ui.theme.DarkBlue
+import com.example.scale1.ui.theme.LightBlue
+import com.example.scale1.ui.theme.LightGray
+import com.example.scale1.ui.theme.Purple40
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -165,7 +169,7 @@ fun WeekColumn(
     selectedName: String?
 ) {
     Column(
-        modifier = Modifier.border(1.dp, Color.LightGray)
+        modifier = Modifier.border(1.dp, Purple40)
     ) {
         DayColumn(dayData = weekData.monday, day = MONDAY, selectedName)
         DayColumn(dayData = weekData.tuesday, day = TUESDAY, selectedName)
@@ -191,7 +195,7 @@ fun DayColumn(
             style = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Gray)
+                .background(DarkBlue)
                 .padding(3.dp)
         )
 
@@ -208,8 +212,8 @@ fun PersonRowWeek(index: Int, person: People) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, Color.LightGray)
-            .background(color = if (index % 2 == 0) Color.LightGray else Color.Transparent),
+            .border(1.dp, LightBlue)
+            .background(color = if (index % 2 == 0) LightGray else Color.Transparent),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
