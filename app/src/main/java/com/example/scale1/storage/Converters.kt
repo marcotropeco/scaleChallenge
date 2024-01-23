@@ -1,7 +1,6 @@
 package com.example.scale1.storage
 
 import androidx.room.TypeConverter
-import com.example.scale1.model.People
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

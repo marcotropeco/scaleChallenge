@@ -1,4 +1,4 @@
-package com.example.scale1.model
+package com.example.scale1.domain.models
 
 data class WeekData(
     val monday: List<People>,

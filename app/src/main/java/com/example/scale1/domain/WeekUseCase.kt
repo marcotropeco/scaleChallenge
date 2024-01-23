@@ -1,7 +1,8 @@
-package com.example.scale1.service
+package com.example.scale1.domain
 
-import com.example.scale1.model.ResultUseCase
-import com.example.scale1.model.WeekData
+import com.example.scale1.domain.models.ResultUseCase
+import com.example.scale1.domain.models.WeekData
+import com.example.scale1.domain.repository.WeekRepository
 
 class WeekUseCase(private val repository: WeekRepository) {
     suspend operator fun invoke(week: Int): ResultUseCase<List<WeekData>> {
