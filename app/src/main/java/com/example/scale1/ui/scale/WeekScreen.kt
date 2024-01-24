@@ -1,8 +1,8 @@
 package com.example.scale1.ui.scale
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,7 +51,6 @@ import com.example.scale1.ui.scale.Defines.WEDNESDAY
 import com.example.scale1.ui.theme.DarkBlue
 import com.example.scale1.ui.theme.LightBlue
 import com.example.scale1.ui.theme.LightGray
-import com.example.scale1.ui.theme.Purple40
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -66,8 +66,19 @@ fun WeekScreen(viewModel: WeekViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("$SCALE_WEEK $dateFormatted") },
-                modifier = Modifier.padding(horizontal = 24.dp)
+                colors = topAppBarColors(
+                    containerColor = Color.LightGray,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Box(
+                        Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+
+                        Text("$SCALE_WEEK $dateFormatted")
+                    }
+                }
             )
         },
         content = { padding ->
@@ -105,7 +116,8 @@ fun WeekScreen(viewModel: WeekViewModel) {
                         }
                     }
                 }
-            } })
+            }
+        })
 }
 
 @Composable
@@ -125,7 +137,9 @@ fun WeekColumn(
     selectedName: String?
 ) {
     Column(
-        modifier = Modifier.border(1.dp, Purple40)
+        modifier = Modifier
+            .border(1.dp, MaterialTheme.colorScheme.onSurface, shape = MaterialTheme.shapes.medium)
+            .padding(16.dp)
     ) {
         DayColumn(dayData = weekData.monday, day = MONDAY, selectedName)
         DayColumn(dayData = weekData.tuesday, day = TUESDAY, selectedName)
